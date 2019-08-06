@@ -117,10 +117,11 @@ protected:
     void resizeEvent(QResizeEvent* event);
 
 private:
-    WebView         *view;              // Webkit Page View
-    QHBoxLayout     *topBox;            // Box for progress and messages
-    QProgressBar    *loadProgress;      // progress bar to display page loading
-    QLabel          *messagesBox;       // error messages
+    WebView         *view;               // Webkit Page View
+    QVBoxLayout     *topBox;             // Box for progress and messages
+    QFrame          *loadProgressFrame;  // progress bar frame to display page loading
+    QProgressBar    *loadProgress;       // progress bar
+    QLabel          *messagesBox;        // error messages
 
     QwkSettings     *qwkSettings;
     QNetworkDiskCache *diskCache;

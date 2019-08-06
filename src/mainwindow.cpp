@@ -56,11 +56,12 @@
 
 MainWindow::MainWindow() : QMainWindow()
 {
-    progress        = 0;
-    diskCache       = NULL;
-    topBox          = NULL;
-    loadProgress    = NULL;
-    messagesBox     = NULL;
+    progress          = 0;
+    diskCache         = NULL;
+    topBox            = NULL;
+    loadProgress      = NULL;
+    loadProgressFrame = NULL;
+    messagesBox       = NULL;
 
     qwkSettings     = new QwkSettings();
 
@@ -169,31 +170,30 @@ void MainWindow::init(AnyOption *opts)
     // --- Web View --- //
     view = new WebView(this);
 
-    QPalette paletteG = this->palette();
-    paletteG.setColor(QPalette::Window, QColor(220,240,220,127));
+    QPalette paletteW = this->palette();
+    paletteW.setColor(QPalette::Window, QColor(255,255,255,255));
 
     QPalette paletteR = this->palette();
     paletteR.setColor(QPalette::Window, QColor(240,220,220,127));
 
-    topBox = new QHBoxLayout(view);
+    topBox = new QVBoxLayout(view);
     topBox->setContentsMargins(2, 2, 2, 2);
+
+
 
     if (qwkSettings->getBool("view/show_load_progress")) {
         // --- Progress Bar --- //
+        loadProgressFrame = new QFrame(view);
+        QVBoxLayout *loadProgressFrameLayout = new QVBoxLayout();
+
+        loadProgressFrame->setAutoFillBackground(true);
+        loadProgressFrame->setPalette(paletteW);
+        loadProgressFrame->setContentsMargins(32, 10, 32, 10);
+        loadProgressFrame->setLayout(loadProgressFrameLayout);
+
         loadProgress = new QProgressBar();
-        loadProgress->setContentsMargins(2, 2, 2, 2);
-        loadProgress->setMinimumSize(100, 16);
-        loadProgress->setMaximumSize(100, 16);
-        loadProgress->setAutoFillBackground(true);
-        loadProgress->setPalette(paletteG);
-
-        // Do not work... Need Layout...
-        loadProgress->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-        loadProgress->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-        loadProgress->hide();
-
-        topBox->addWidget(loadProgress, 0, Qt::AlignTop | Qt::AlignLeft);
+        loadProgressFrameLayout->addWidget(loadProgress);
+        loadProgressFrame->hide();
     }
 
     if (qwkSettings->getBool("browser/show_error_messages")) {
@@ -340,6 +340,7 @@ void MainWindow::init(AnyOption *opts)
     }
     delayedLoad->singleShot(delay_load, this, SLOT(delayedPageLoad()));
 
+    loadProgressFrame->setGeometry(view->rect());
 }
 
 void MainWindow::delayedWindowResize()
@@ -625,8 +626,8 @@ void MainWindow::startLoading()
 
     QWebSettings::clearMemoryCaches();
 
-    if (loadProgress) {
-        loadProgress->show();
+    if (loadProgressFrame) {
+        loadProgressFrame->show();
     }
 
     if (messagesBox) {
@@ -660,10 +661,10 @@ void MainWindow::setProgress(int p)
     if (loadProgress) {
         loadProgress->setValue(p);
         if (p != 100) {
-            loadProgress->show();
+            loadProgressFrame->show();
             view->resetLoadTimer();
         } else {
-            loadProgress->hide();
+            loadProgressFrame->hide();
             view->stopLoadTimer();
         }
     }
@@ -736,8 +737,8 @@ void MainWindow::finishLoading(bool ok)
         }
     }
 
-    if (loadProgress) {
-        loadProgress->hide();
+    if (loadProgressFrame) {
+        loadProgressFrame->hide();
     }
 
     // On AJAX it's triggered too?
