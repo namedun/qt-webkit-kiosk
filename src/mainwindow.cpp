@@ -192,6 +192,23 @@ void MainWindow::init(AnyOption *opts)
         loadProgressFrame->setLayout(loadProgressFrameLayout);
 
         loadProgress = new QProgressBar();
+        loadProgress->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        loadProgress->setStyleSheet(
+            "QProgressBar {"
+            "    font-size: 14px;"
+            "    border: 1px solid #808080;"
+            "    border-radius: 3px;"
+            "    height: 32px;"
+            "    text-align: left;"
+            "    margin-left: 45px;"
+            "    padding: 2px 2px 2px 2px;"
+            "}"
+            "QProgressBar::chunk {"
+            "    background-color: #1e81be;"
+            "    width: 4px;"
+            "    margin: 1px;"
+            "}"
+        );
         loadProgressFrameLayout->addWidget(loadProgress);
         loadProgressFrame->hide();
     }
