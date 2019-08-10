@@ -211,6 +211,7 @@ void MainWindow::init(AnyOption *opts)
         );
         loadProgressFrameLayout->addWidget(loadProgress);
         loadProgressFrame->hide();
+        loadProgress->setValue(0);
     }
 
     if (qwkSettings->getBool("browser/show_error_messages")) {
@@ -342,7 +343,6 @@ void MainWindow::init(AnyOption *opts)
     if (qwkSettings->getBool("view/hide_mouse_cursor")) {
         QApplication::setOverrideCursor(Qt::BlankCursor);
         view->setCursor(*hiddenCurdor);
-        QApplication::processEvents(); //process events to force cursor update before press
     }
 
     int delay_resize = 1;
@@ -357,6 +357,7 @@ void MainWindow::init(AnyOption *opts)
     }
     delayedLoad->singleShot(delay_load, this, SLOT(delayedPageLoad()));
 
+    QApplication::processEvents(); //process events to force view update
     loadProgressFrame->setGeometry(view->rect());
 }
 
@@ -682,6 +683,7 @@ void MainWindow::setProgress(int p)
             view->resetLoadTimer();
         } else {
             loadProgressFrame->hide();
+            loadProgress->setValue(0);
             view->stopLoadTimer();
         }
     }
@@ -756,6 +758,7 @@ void MainWindow::finishLoading(bool ok)
 
     if (loadProgressFrame) {
         loadProgressFrame->hide();
+        loadProgress->setValue(0);
     }
 
     // On AJAX it's triggered too?
